@@ -24,6 +24,7 @@ import {
   setFavorite,
   trashCipher,
 } from "./edit";
+import { describeRequest, registerWebAuthnListeners, respond as respondToWebAuthn } from "./fido2";
 import { MENU_PATH, registerInlineMenuListeners, syncInlineMenuRegistration } from "./inline";
 import { toVaultItem } from "./items";
 import { recordActivity, registerLockListeners } from "./lock";
@@ -134,7 +135,29 @@ const handlers: Handlers = {
   async listTrash() {
     return (await vault.trash()).map(toVaultItem);
   },
-  saveCipher,
+  async saveCipher(view) {
+    // The popup only ever sees passkeys without their private keys: restore them from the stored
+    // item by credential id, and never accept key material (or new passkeys) from the popup.
+    if (view.id !== undefined && view.login?.fido2Credentials?.length) {
+      const original = await decryptCipher(String(view.id));
+      const keys = new Map(
+        (original.login?.fido2Credentials ?? []).map((c) => [c.credentialId, c]),
+      );
+      view.login = {
+        ...view.login,
+        fido2Credentials: view.login.fido2Credentials.flatMap((c) => {
+          const stored = keys.get(c.credentialId);
+          return stored ? [stored] : [];
+        }),
+      };
+    } else if (view.login) {
+      view.login = {
+        ...view.login,
+        fido2Credentials: view.id === undefined ? undefined : view.login.fido2Credentials,
+      };
+    }
+    return saveCipher(view);
+  },
   setFavorite,
   trashCipher,
   restoreCipher,
@@ -144,6 +167,8 @@ const handlers: Handlers = {
   },
   listFolders,
   createFolder,
+  webauthnRequest: describeRequest,
+  webauthnRespond: respondToWebAuthn,
   async previewTotp(key) {
     return previewTotp(key);
   },
@@ -153,6 +178,13 @@ const handlers: Handlers = {
     // Org admins can hide passwords from members: autofill still works, viewing doesn't.
     if (!cipher.viewPassword && cipher.login !== undefined) {
       cipher.login = { ...cipher.login, password: undefined, totp: undefined };
+    }
+    // Passkey private keys never leave the service worker; saveCipher puts them back.
+    if (cipher.login?.fido2Credentials) {
+      cipher.login = {
+        ...cipher.login,
+        fido2Credentials: cipher.login.fido2Credentials.map((c) => ({ ...c, keyValue: "" })),
+      };
     }
     return cipher;
   },
@@ -272,5 +304,6 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 registerInlineMenuListeners(ready);
+registerWebAuthnListeners(ready);
 registerLockListeners();
 registerClipboardListeners();

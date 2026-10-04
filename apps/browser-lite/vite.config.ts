@@ -16,7 +16,15 @@ export default defineConfig({
   base: "",
   publicDir: resolve(__dirname, "public"),
   esbuild: { jsx: "automatic", jsxImportSource: "preact" },
-  resolve: { alias: { react: "preact/compat", "react-dom": "preact/compat" } },
+  resolve: {
+    alias: {
+      react: "preact/compat",
+      "react-dom": "preact/compat",
+      // Reused reference helpers (FIDO2 domain validation, CBOR, ECDSA encoding). Only
+      // dependency-free modules are imported; tsconfig maps the same path for type-checking.
+      "@bitwarden/common": resolve(__dirname, "../../libs/common/src"),
+    },
+  },
   build: {
     outDir: resolve(__dirname, "../../dist/apps/browser-lite"),
     emptyOutDir: true,

@@ -47,6 +47,7 @@ export function toVaultItem(cipher: CipherListView): VaultItem {
     hasPassword: cipher.copyableFields.includes("LoginPassword"),
     hasTotp: cipher.copyableFields.includes("LoginTotp"),
     edit: cipher.edit,
+    hasPasskey: login?.hasFido2 ?? false,
     deletedDate: cipher.deletedDate,
     revisionDate: cipher.revisionDate,
   };

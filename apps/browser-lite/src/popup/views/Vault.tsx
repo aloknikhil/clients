@@ -9,6 +9,8 @@ import { Reprompt } from "./Reprompt";
 
 /** Rendering thousands of rows makes the popup sluggish; search narrows past this. */
 const MAX_ROWS = 200;
+/** Per-device view preference, not vault data. */
+const FAVORITES_KEY = "favoritesOnly";
 
 type Section = "suggested" | "favorites" | "all";
 
@@ -44,6 +46,23 @@ export function Vault({
   const [suggested, setSuggested] = useState<VaultItem[]>([]);
   const [tabId, setTabId] = useState<number>();
   const [query, setQuery] = useState("");
+  const [favoritesOnly, setFavoritesOnly] = useState(() => {
+    try {
+      return localStorage.getItem(FAVORITES_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const toggleFavorites = () => {
+    const next = !favoritesOnly;
+    setFavoritesOnly(next);
+    setSelected(0);
+    try {
+      localStorage.setItem(FAVORITES_KEY, next ? "1" : "0");
+    } catch {
+      // Remembering the filter is a convenience; ignore storage failures.
+    }
+  };
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string>();
   const [pending, setPending] = useState<() => Promise<void>>();
@@ -77,6 +96,11 @@ export function Vault({
   const rows = useMemo<Row[]>(() => {
     const all = items ?? [];
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    if (favoritesOnly) {
+      return all
+        .filter((i) => i.favorite && matches(i, terms))
+        .map((item) => ({ key: `f:${item.id}`, item, section: "favorites" as const }));
+    }
     if (terms.length > 0) {
       return all
         .filter((i) => matches(i, terms))
@@ -89,7 +113,7 @@ export function Vault({
         .map((item) => ({ key: `f:${item.id}`, item, section: "favorites" as const })),
       ...all.map((item) => ({ key: `a:${item.id}`, item, section: "all" as const })),
     ];
-  }, [items, suggested, query]);
+  }, [items, suggested, query, favoritesOnly]);
 
   const visible = rows.slice(0, MAX_ROWS + suggested.length);
   const allCount = query === "" ? (items?.length ?? 0) : rows.length;
@@ -238,6 +262,13 @@ export function Vault({
         <IconButton icon="plus" label={t("newItem")} onClick={onNew} />
         <IconButton icon="wand" label={t("generator")} onClick={() => onNavigate("generator")} />
         <IconButton icon="settings" label={t("settings")} onClick={() => onNavigate("settings")} />
+        <IconButton
+          icon="star"
+          label={favoritesOnly ? t("showAllItems") : t("showFavorites")}
+          active={favoritesOnly}
+          filled={favoritesOnly}
+          onClick={toggleFavorites}
+        />
         <IconButton icon="lock" label={t("lockNow")} onClick={onLock} />
       </header>
 

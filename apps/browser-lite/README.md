@@ -86,12 +86,31 @@ npx jest -c apps/browser-lite/jest.config.js
   - The code is copied after autofill (configurable).
   - The code is filled into one-time-code fields.
 - **Inline menu:** a dropdown on sign-in fields, toggled in Settings.
-  - The content script is registered dynamically with `chrome.scripting.registerContentScripts`
-    and only receives a lock state and a match count.
-  - The menu is an extension-origin iframe in a closed shadow root, so the page can't read it or
-    restyle it.
-  - The iframe has its own narrow message channel. Requests are scoped to `sender.tab`, as set by
-    Chrome, and it can fill only items that match that tab. It's barred from the popup's API.
+  - Passkeys come first when the site has asked for one, then this site's logins.
+  - A search bar searches every login in the vault. ↑, ↓ and ↵ work inside the menu.
+  - The content script is registered dynamically and only receives lock state and counts.
+  - The menu is an extension-origin iframe in a closed shadow root.
+  - Each menu carries a nonce that the content script registered with the service worker. Without
+    it, the menu's narrow channel answers nothing. This is what lets the menu search and fill
+    non-matching logins without a site embedding the menu page to do the same.
+- **Passkeys (WebAuthn): sign in and create.**
+  - A MAIN-world hook (`content/webauthn-page.ts`, `document_start`) wraps `navigator.credentials`.
+    An isolated bridge relays requests to `background/fido2.ts`, which makes every decision.
+    - The origin comes from Chrome (`port.sender`).
+    - HTTPS is required, except on localhost.
+    - The rpId is validated with the reference `isValidRpId` (`libs/common` fido2/domain-utils,
+      including Related Origin Requests).
+    - Cross-origin iframes and unsupported algorithms fall back to the browser.
+    - Page-supplied requests are shape-validated (`sanitizeRequest`).
+  - Nothing is signed or created without an explicit choice: the dropdown for conditional
+    mediation (passkey autofill), or a prompt window for modal sign-in and creation.
+  - Native WebAuthn runs alongside conditional requests and handles "use another device".
+  - Signing and key creation port the reference `Fido2AuthenticatorService` (P-256 ECDSA via
+    WebCrypto, `fmt: none` attestation, Bitwarden's AAGUID), reusing its CBOR and DER helpers.
+    **This needs key-management review.**
+  - Passkey private keys never reach the popup: `getCipher` strips them, and `saveCipher`
+    restores them from the stored item by credential id.
+- **Favorites filter:** the star next to the lock in the vault header.
 
 ## Size (production build)
 

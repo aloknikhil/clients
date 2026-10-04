@@ -187,6 +187,13 @@ export function Settings({
               onChange={(v) => void update({ inlineMenu: v })}
             />
           </Option>
+          <Option label={t("usePasskeys")}>
+            <Switch
+              checked={settings.passkeys}
+              label={t("usePasskeys")}
+              onChange={(v) => void update({ passkeys: v })}
+            />
+          </Option>
           <Option label={t("copyTotpOnFill")}>
             <Switch
               checked={settings.copyTotpOnFill}

@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS: Settings = {
   copyTotpOnFill: true,
   showIcons: true,
   inlineMenu: true,
+  passkeys: true,
 };
 
 export async function getSettings(): Promise<Settings> {

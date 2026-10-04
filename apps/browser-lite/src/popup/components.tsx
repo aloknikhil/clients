@@ -37,7 +37,7 @@ import {
 } from "lucide-preact";
 
 import { t } from "../lib/i18n";
-import { ItemKind, type VaultItem } from "../lib/rpc";
+import { ItemKind, type PasskeyChoice, type VaultItem } from "../lib/rpc";
 
 const ICONS = {
   search: Search,
@@ -449,4 +449,18 @@ export function Spinner() {
       />
     </svg>
   );
+}
+
+/** Subtitle for a passkey choice: login name and save date, plus an id fragment if still ambiguous. */
+export function passkeySubtitle(choice: PasskeyChoice, all: PasskeyChoice[]): string {
+  const date = new Date(choice.savedAt).toLocaleDateString();
+  const label = `${choice.name} · ${date}`;
+  const twins = all.filter(
+    (c) =>
+      c !== choice &&
+      c.name === choice.name &&
+      c.userName === choice.userName &&
+      new Date(c.savedAt).toLocaleDateString() === date,
+  );
+  return twins.length > 0 && choice.shortId ? `${label} · ${choice.shortId}` : label;
 }

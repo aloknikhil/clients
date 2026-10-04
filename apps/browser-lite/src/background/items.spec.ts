@@ -48,6 +48,7 @@ describe("toVaultItem", () => {
       hasPassword: true,
       hasTotp: true,
       edit: true,
+      hasPasskey: false,
       deletedDate: undefined,
       revisionDate: "2026-01-01T00:00:00Z",
     });

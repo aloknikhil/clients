@@ -12,11 +12,13 @@ const TEXT_TYPES = new Set(["text", "email", "tel", ""]);
 const MENU_WIDTH = 320;
 const ROW_HEIGHT = 48;
 const CHROME_HEIGHT = 38;
+const SEARCH_HEIGHT = 44;
 
 let host: HTMLElement | undefined;
 let frame: HTMLIFrameElement | undefined;
 let anchor: HTMLInputElement | undefined;
 let raf = 0;
+let menuNonce: string | undefined;
 
 function hints(input: HTMLInputElement): string {
   return [
@@ -80,6 +82,7 @@ function schedulePosition(): void {
 }
 
 function close(): void {
+  menuNonce = undefined;
   host?.remove();
   host = undefined;
   frame = undefined;
@@ -92,28 +95,37 @@ async function open(input: HTMLInputElement): Promise<void> {
   if (anchor === input && host) {
     return;
   }
-  let probe: { locked: boolean; count: number } | undefined;
+  // The nonce proves to the service worker that this menu was opened by us: it only exists here
+  // and in the src of an iframe inside a closed shadow root.
+  const nonce = crypto.randomUUID();
+  let probe: { locked: boolean; count: number; passkeys: number } | undefined;
   try {
-    probe = await chrome.runtime.sendMessage({ inline: "probe" });
+    probe = await chrome.runtime.sendMessage({ inline: "probe", nonce });
   } catch {
     return; // Extension reloaded or disabled.
   }
-  if (!probe || (!probe.locked && probe.count === 0) || document.activeElement !== input) {
+  if (!probe || document.activeElement !== input) {
     return;
   }
   close();
   anchor = input;
-  const rows = probe.locked ? 1 : Math.min(probe.count, 4);
+  menuNonce = nonce;
+  // Initial guess; the menu reports its real height once rendered.
+  const rows = probe.locked ? 1 : Math.max(1, Math.min(probe.count + probe.passkeys, 5));
 
   host = document.createElement("div");
   host.style.cssText =
     "position:fixed;top:-9999px;left:-9999px;z-index:2147483647;margin:0;padding:0;border:0;width:auto;height:auto;";
   const shadow = host.attachShadow({ mode: "closed" });
   frame = document.createElement("iframe");
-  frame.src = chrome.runtime.getURL("inline/menu.html");
+  frame.src = `${chrome.runtime.getURL("inline/menu.html")}#${nonce}`;
   frame.title = "Autofill";
   frame.setAttribute("allow", "");
-  frame.style.cssText = `display:block;width:${MENU_WIDTH}px;height:${CHROME_HEIGHT + rows * ROW_HEIGHT}px;border:0;border-radius:4px;color-scheme:normal;background:transparent;box-shadow:0 1px 1px #00000014,0 4px 8px -4px #00000033,0 16px 24px -8px #0000004d;`;
+  // Text quality: an iframe with rounded corners gets a masked compositing layer, and a transparent
+  // one has no opaque surface under its text; both make Chrome fall back to blurrier anti-aliasing.
+  // So: square corners and an opaque background matching the menu surface.
+  const surface = matchMedia("(prefers-color-scheme: light)").matches ? "#f7f7f7" : "#131519";
+  frame.style.cssText = `display:block;width:${MENU_WIDTH}px;height:${CHROME_HEIGHT + (probe.locked ? 0 : SEARCH_HEIGHT) + rows * ROW_HEIGHT}px;border:0;border-radius:0;color-scheme:normal;background:${surface};box-shadow:0 1px 1px #00000014,0 4px 8px -4px #00000033,0 16px 24px -8px #0000004d;`;
   shadow.append(frame);
   document.documentElement.append(host);
   position();
@@ -167,7 +179,19 @@ document.addEventListener(
 );
 
 chrome.runtime.onMessage.addListener((message: unknown, sender) => {
-  if (sender.id === chrome.runtime.id && (message as { inline?: string })?.inline === "close") {
+  if (sender.id !== chrome.runtime.id) {
+    return;
+  }
+  const m = message as { inline?: string; nonce?: string; height?: number };
+  if (m?.inline === "close") {
     close();
+  } else if (
+    m?.inline === "resize" &&
+    frame &&
+    m.nonce === menuNonce &&
+    typeof m.height === "number"
+  ) {
+    frame.style.height = `${Math.round(m.height)}px`;
+    position();
   }
 });

@@ -63,10 +63,38 @@ export interface VaultItem {
   hasTotp: boolean;
   /** The user may edit everything (otherwise only favorite and folder). */
   edit: boolean;
+  /** The login holds a passkey. */
+  hasPasskey: boolean;
   /** Set when the item is in the trash. */
   deletedDate?: string;
   revisionDate: string;
 }
+
+export interface PasskeyChoice {
+  cipherId: string;
+  name: string;
+  userName?: string;
+  /** When the login holding the passkey was saved, to tell duplicates apart. */
+  savedAt: string;
+  /** Short credential id fragment, shown only when two choices would otherwise look identical. */
+  shortId: string;
+}
+
+export interface WebAuthnPrompt {
+  kind: "get" | "create";
+  host: string;
+  /** Human-friendly site name: the RP's name when creating, else the registrable domain. */
+  siteName: string;
+  rpId: string;
+  rpName?: string;
+  userName?: string;
+  fallbackSupported: boolean;
+  /** get: logins holding a usable passkey. create: logins for this site that can receive one. */
+  choices: PasskeyChoice[];
+}
+
+export type WebAuthnChoice =
+  { cipherId: string } | { newLogin: true } | { fallback: true } | { cancel: true };
 
 export interface Folder {
   id: string;
@@ -121,6 +149,8 @@ export interface Settings {
   showIcons: boolean;
   /** Suggest matching logins in a dropdown on sign-in fields (needs a script on every page). */
   inlineMenu: boolean;
+  /** Offer and save passkeys (wraps navigator.credentials on https pages). */
+  passkeys: boolean;
 }
 
 /**
@@ -163,6 +193,9 @@ export interface Rpc {
   copyField(id: string, field: CopyableField): boolean;
   copyText(text: string): void;
   totp(id: string): TotpResponse | undefined;
+  /** Passkey prompt window: what the site asked for and what the user can pick. */
+  webauthnRequest(id: string): WebAuthnPrompt | undefined;
+  webauthnRespond(id: string, choice: WebAuthnChoice): void;
   /** Previews a code for a secret or otpauth:// URI being typed in the editor. */
   previewTotp(key: string): TotpResponse | undefined;
   /** Finds an authenticator QR code on the visible tab; returns its otpauth:// URI. */

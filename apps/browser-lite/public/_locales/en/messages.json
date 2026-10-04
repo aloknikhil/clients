@@ -5,6 +5,9 @@
   "address": {
     "message": "Address"
   },
+  "addToExistingLogin": {
+    "message": "Or add to an existing login"
+  },
   "addWebsite": {
     "message": "Add website"
   },
@@ -44,11 +47,17 @@
   "checkboxField": {
     "message": "Checkbox"
   },
+  "choosePasskey": {
+    "message": "Choose a passkey"
+  },
   "city": {
     "message": "City"
   },
   "clearClipboard": {
     "message": "Clear clipboard"
+  },
+  "close": {
+    "message": "Close"
   },
   "codeCopied": {
     "message": "Code copied"
@@ -94,6 +103,9 @@
   },
   "country": {
     "message": "Country"
+  },
+  "createdOn": {
+    "message": "created $1"
   },
   "customFields": {
     "message": "Custom fields"
@@ -314,6 +326,12 @@
   "noItemsFound": {
     "message": "No items found"
   },
+  "noLoginsForSite": {
+    "message": "No logins saved for this site. Search your vault."
+  },
+  "noPasskeysForSite": {
+    "message": "No saved passkeys for this site."
+  },
   "notes": {
     "message": "Notes"
   },
@@ -346,6 +364,21 @@
   },
   "options": {
     "message": "Options"
+  },
+  "passkey": {
+    "message": "Passkey"
+  },
+  "passkeyHint": {
+    "message": "Passkey sign-in is safer than a password"
+  },
+  "passkeyRequestExpired": {
+    "message": "This passkey request has ended"
+  },
+  "passkeyRequestExpiredDesc": {
+    "message": "The site stopped waiting. Start the sign-in again on the page."
+  },
+  "passkeys": {
+    "message": "Passkeys"
   },
   "passphrase": {
     "message": "Passphrase"
@@ -410,6 +443,12 @@
   "save": {
     "message": "Save"
   },
+  "saveAsNewLogin": {
+    "message": "Save as new login"
+  },
+  "savePasskey": {
+    "message": "Save passkey"
+  },
   "saveSite": {
     "message": "Save site"
   },
@@ -452,6 +491,12 @@
   "show": {
     "message": "Show"
   },
+  "showAllItems": {
+    "message": "Show all items"
+  },
+  "showFavorites": {
+    "message": "Show favorites only"
+  },
   "showWebsiteIcons": {
     "message": "Show website icons"
   },
@@ -463,6 +508,9 @@
   },
   "signingIn": {
     "message": "Signing in…"
+  },
+  "signInWithPasskey": {
+    "message": "Sign in with passkey"
   },
   "siteSaved": {
     "message": "Site saved"
@@ -502,6 +550,9 @@
   },
   "thisPage": {
     "message": "This page"
+  },
+  "thisSite": {
+    "message": "This site"
   },
   "titleHonorific": {
     "message": "Title"
@@ -590,8 +641,14 @@
   "updated": {
     "message": "Updated"
   },
+  "useAnotherDevice": {
+    "message": "Use another device"
+  },
   "useMasterPassword": {
     "message": "Use master password"
+  },
+  "usePasskeys": {
+    "message": "Use for passkeys"
   },
   "usePin": {
     "message": "Use PIN"

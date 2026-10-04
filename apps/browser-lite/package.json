@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "vite build && vite build -c vite.content.config.ts --mode autofill && vite build -c vite.content.config.ts --mode inline",
+    "build": "vite build && vite build -c vite.content.config.ts --mode autofill && vite build -c vite.content.config.ts --mode inline && vite build -c vite.content.config.ts --mode webauthn-page && vite build -c vite.content.config.ts --mode webauthn-bridge",
     "build:watch": "vite build --watch",
     "test": "jest"
   },

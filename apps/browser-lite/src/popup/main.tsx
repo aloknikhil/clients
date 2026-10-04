@@ -20,6 +20,7 @@ import { Item } from "./views/Item";
 import { Lock } from "./views/Lock";
 import { Login } from "./views/Login";
 import { NewDevice } from "./views/NewDevice";
+import { PasskeyPrompt } from "./views/PasskeyPrompt";
 import { Settings } from "./views/Settings";
 import { Trash } from "./views/Trash";
 import { TwoFactor } from "./views/TwoFactor";
@@ -126,6 +127,12 @@ function App() {
 
   if (status.status === AuthStatus.Locked) {
     return <Lock status={status} onUnlocked={refresh} onLoggedOut={refresh} />;
+  }
+
+  // Opened by the service worker as a passkey prompt window.
+  const webauthnId = /^#webauthn=([0-9a-f-]{36})$/.exec(location.hash)?.[1];
+  if (webauthnId) {
+    return <PasskeyPrompt id={webauthnId} />;
   }
 
   const home = () => setScreen({ name: "vault" });

@@ -297,6 +297,21 @@ export function Item({
               <Field label={t("username")} value={login?.username} />
               <Field label={t("password")} value={login?.password} hidden />
               {login?.totp && <Totp id={id} />}
+              {(login?.fido2Credentials ?? []).map((passkey) => (
+                <div class="field" key={passkey.credentialId}>
+                  <div class="field-body">
+                    <div class="label">{t("passkey")}</div>
+                    <div class="field-value">
+                      {passkey.userName || passkey.rpId}
+                      <span class="faint" style={{ fontSize: "12px" }}>
+                        {" · "}
+                        {t("createdOn", new Date(passkey.creationDate).toLocaleDateString())}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="badge">{passkey.rpId}</span>
+                </div>
+              ))}
             </Group>
 
             <Group>

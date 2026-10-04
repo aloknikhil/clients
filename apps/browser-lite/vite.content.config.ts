@@ -11,6 +11,8 @@ import { defineConfig } from "vite";
 const ENTRIES: Record<string, { file: string; name: string }> = {
   autofill: { file: "autofill", name: "bwLiteAutofill" },
   inline: { file: "inline", name: "bwLiteInline" },
+  "webauthn-page": { file: "webauthn-page", name: "bwLiteWebAuthnPage" },
+  "webauthn-bridge": { file: "webauthn-bridge", name: "bwLiteWebAuthnBridge" },
 };
 
 export default defineConfig(({ mode }) => {
