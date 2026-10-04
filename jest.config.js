@@ -17,6 +17,7 @@ module.exports = {
   }),
   projects: [
     "<rootDir>/apps/browser/jest.config.js",
+    "<rootDir>/apps/browser-lite/jest.config.js",
     "<rootDir>/apps/cli/jest.config.js",
     "<rootDir>/apps/desktop/jest.config.js",
     "<rootDir>/apps/web/jest.config.js",

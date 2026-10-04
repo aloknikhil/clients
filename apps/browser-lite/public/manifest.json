@@ -1,0 +1,70 @@
+{
+  "manifest_version": 3,
+  "minimum_chrome_version": "120",
+  "name": "__MSG_extName__",
+  "short_name": "Bitwarden Lite",
+  "version": "0.1.0",
+  "description": "__MSG_extDesc__",
+  "default_locale": "en",
+  "icons": {
+    "16": "images/icon16.png",
+    "32": "images/icon32.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_icon": {
+      "19": "images/icon19.png",
+      "38": "images/icon38.png"
+    },
+    "default_title": "Bitwarden Lite",
+    "default_popup": "popup/index.html"
+  },
+  "permissions": [
+    "activeTab",
+    "alarms",
+    "clipboardWrite",
+    "contextMenus",
+    "idle",
+    "offscreen",
+    "scripting",
+    "storage",
+    "unlimitedStorage"
+  ],
+  "host_permissions": ["https://*/*", "http://*/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "linux": "Ctrl+Shift+U"
+      },
+      "description": "__MSG_commandOpenPopup__"
+    },
+    "autofill_login": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L"
+      },
+      "description": "__MSG_commandAutofillLogin__"
+    },
+    "generate_password": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+9"
+      },
+      "description": "__MSG_commandGeneratePassword__"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["inline/menu.html"],
+      "matches": ["https://*/*", "http://*/*"],
+      "use_dynamic_url": true
+    }
+  ]
+}

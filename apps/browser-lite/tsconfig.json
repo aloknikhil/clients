@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "ESNext.Disposable"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+    "types": ["chrome"]
+  },
+  "include": ["src", "vite.config.ts", "vite.content.config.ts"],
+  "exclude": ["src/**/*.spec.ts"]
+}

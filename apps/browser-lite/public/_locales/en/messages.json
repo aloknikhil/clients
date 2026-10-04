@@ -1,0 +1,641 @@
+{
+  "account": {
+    "message": "Account"
+  },
+  "address": {
+    "message": "Address"
+  },
+  "addWebsite": {
+    "message": "Add website"
+  },
+  "allItems": {
+    "message": "All items"
+  },
+  "authenticatorKey": {
+    "message": "Authenticator key"
+  },
+  "authenticatorKeyPlaceholder": {
+    "message": "Secret or otpauth:// link"
+  },
+  "autofill": {
+    "message": "Autofill"
+  },
+  "autofillFailed": {
+    "message": "No fillable fields on this page"
+  },
+  "avoidAmbiguous": {
+    "message": "Avoid ambiguous characters"
+  },
+  "back": {
+    "message": "Back"
+  },
+  "brand": {
+    "message": "Brand"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "capitalize": {
+    "message": "Capitalize"
+  },
+  "cardholderName": {
+    "message": "Cardholder name"
+  },
+  "checkboxField": {
+    "message": "Checkbox"
+  },
+  "city": {
+    "message": "City"
+  },
+  "clearClipboard": {
+    "message": "Clear clipboard"
+  },
+  "codeCopied": {
+    "message": "Code copied"
+  },
+  "codeCopiedForNextStep": {
+    "message": "Code copied for the next step"
+  },
+  "commandAutofillLogin": {
+    "message": "Autofill login"
+  },
+  "commandGeneratePassword": {
+    "message": "Generate and copy a password"
+  },
+  "commandOpenPopup": {
+    "message": "Open the extension"
+  },
+  "company": {
+    "message": "Company"
+  },
+  "confirm": {
+    "message": "Confirm"
+  },
+  "continue": {
+    "message": "Continue"
+  },
+  "copy": {
+    "message": "Copy"
+  },
+  "copyOneTimeCode": {
+    "message": "Copy one-time code"
+  },
+  "copyPassword": {
+    "message": "Copy password"
+  },
+  "copyTotpOnFill": {
+    "message": "Copy one-time code after fill"
+  },
+  "copyUsername": {
+    "message": "Copy username"
+  },
+  "copyValue": {
+    "message": "Copy $1"
+  },
+  "country": {
+    "message": "Country"
+  },
+  "customFields": {
+    "message": "Custom fields"
+  },
+  "deletedOn": {
+    "message": "Deleted $1"
+  },
+  "deleteForever": {
+    "message": "Delete forever"
+  },
+  "deleteForeverQuestion": {
+    "message": "Delete permanently? This can't be undone."
+  },
+  "edit": {
+    "message": "Edit"
+  },
+  "editItem": {
+    "message": "Edit item"
+  },
+  "email": {
+    "message": "Email"
+  },
+  "emailAddress": {
+    "message": "Email address"
+  },
+  "endToEnd": {
+    "message": "End-to-end encrypted"
+  },
+  "expiration": {
+    "message": "Expiration"
+  },
+  "extDesc": {
+    "message": "A fast, minimal Bitwarden password manager."
+  },
+  "extensionUpdated": {
+    "message": "Extension updated"
+  },
+  "extensionUpdatedDesc": {
+    "message": "The popup was rebuilt while the old background was still running. Reload the extension from the extensions page to finish updating."
+  },
+  "extName": {
+    "message": "Bitwarden Lite"
+  },
+  "favorite": {
+    "message": "Favorite"
+  },
+  "favorites": {
+    "message": "Favorites"
+  },
+  "fieldName": {
+    "message": "Field name"
+  },
+  "fifteenMinutes": {
+    "message": "15 minutes"
+  },
+  "fill": {
+    "message": "Fill"
+  },
+  "filled": {
+    "message": "Filled"
+  },
+  "fingerprint": {
+    "message": "Fingerprint"
+  },
+  "firstName": {
+    "message": "First name"
+  },
+  "fiveMinutes": {
+    "message": "5 minutes"
+  },
+  "folder": {
+    "message": "Folder"
+  },
+  "folderName": {
+    "message": "Folder name"
+  },
+  "fourHours": {
+    "message": "4 hours"
+  },
+  "generatePassword": {
+    "message": "Generate password"
+  },
+  "generator": {
+    "message": "Generator"
+  },
+  "hiddenField": {
+    "message": "Hidden"
+  },
+  "hide": {
+    "message": "Hide"
+  },
+  "includeNumber": {
+    "message": "Include number"
+  },
+  "inlineMenu": {
+    "message": "Suggest logins on sign-in fields"
+  },
+  "invalid": {
+    "message": "Invalid"
+  },
+  "invalidMasterPassword": {
+    "message": "Invalid master password"
+  },
+  "invalidPin": {
+    "message": "Invalid PIN"
+  },
+  "itemCount": {
+    "message": "$1 items"
+  },
+  "itemDeleted": {
+    "message": "Item deleted"
+  },
+  "itemRestored": {
+    "message": "Item restored"
+  },
+  "itemSaved": {
+    "message": "Item saved"
+  },
+  "lastName": {
+    "message": "Last name"
+  },
+  "lastSync": {
+    "message": "Synced $1"
+  },
+  "launch": {
+    "message": "Open website"
+  },
+  "length": {
+    "message": "Length"
+  },
+  "licenseNumber": {
+    "message": "License number"
+  },
+  "loading": {
+    "message": "Loading…"
+  },
+  "locked": {
+    "message": "Locked"
+  },
+  "lockNow": {
+    "message": "Lock now"
+  },
+  "lockOnSystemLock": {
+    "message": "Lock when the computer locks"
+  },
+  "logOut": {
+    "message": "Log out"
+  },
+  "masterPassword": {
+    "message": "Master password"
+  },
+  "masterPasswordReprompt": {
+    "message": "Require master password"
+  },
+  "matchDefault": {
+    "message": "Default"
+  },
+  "matchDetection": {
+    "message": "Match detection"
+  },
+  "matchDomain": {
+    "message": "Domain"
+  },
+  "matchExact": {
+    "message": "Exact"
+  },
+  "matchHost": {
+    "message": "Host"
+  },
+  "matchNever": {
+    "message": "Never"
+  },
+  "matchRegex": {
+    "message": "Regex"
+  },
+  "matchStartsWith": {
+    "message": "Starts with"
+  },
+  "middleName": {
+    "message": "Middle name"
+  },
+  "movedToTrash": {
+    "message": "Moved to trash"
+  },
+  "moveToTrash": {
+    "message": "Move to trash"
+  },
+  "moveToTrashQuestion": {
+    "message": "Move this item to the trash?"
+  },
+  "name": {
+    "message": "Name"
+  },
+  "navigate": {
+    "message": "navigate"
+  },
+  "never": {
+    "message": "Never"
+  },
+  "newDevice": {
+    "message": "New device"
+  },
+  "newDeviceVerificationDesc": {
+    "message": "Enter the code sent to your email to verify this device."
+  },
+  "newFolderEllipsis": {
+    "message": "New folder…"
+  },
+  "newItem": {
+    "message": "New item"
+  },
+  "newPin": {
+    "message": "New PIN (4+ digits)"
+  },
+  "noFolder": {
+    "message": "No folder"
+  },
+  "noItemsFound": {
+    "message": "No items found"
+  },
+  "notes": {
+    "message": "Notes"
+  },
+  "notNow": {
+    "message": "Not now"
+  },
+  "number": {
+    "message": "Number"
+  },
+  "numWords": {
+    "message": "Number of words"
+  },
+  "oneHour": {
+    "message": "1 hour"
+  },
+  "oneMinute": {
+    "message": "1 minute"
+  },
+  "oneTimeCode": {
+    "message": "One-time code"
+  },
+  "onRestart": {
+    "message": "On browser restart"
+  },
+  "open": {
+    "message": "open"
+  },
+  "openExtensionsPage": {
+    "message": "Open extensions page"
+  },
+  "options": {
+    "message": "Options"
+  },
+  "passphrase": {
+    "message": "Passphrase"
+  },
+  "passportNumber": {
+    "message": "Passport number"
+  },
+  "password": {
+    "message": "Password"
+  },
+  "passwordConfirmation": {
+    "message": "Confirm master password"
+  },
+  "passwordConfirmationDesc": {
+    "message": "Re-enter your master password to use this item."
+  },
+  "phone": {
+    "message": "Phone"
+  },
+  "pin": {
+    "message": "PIN"
+  },
+  "postalCode": {
+    "message": "Postal code"
+  },
+  "privateKey": {
+    "message": "Private key"
+  },
+  "protectedItem": {
+    "message": "Protected item"
+  },
+  "publicKey": {
+    "message": "Public key"
+  },
+  "qrFound": {
+    "message": "Authenticator key added"
+  },
+  "qrNotFound": {
+    "message": "No authenticator QR code visible on this page"
+  },
+  "readOnlyItem": {
+    "message": "You can only change the folder and favorite of this item."
+  },
+  "refineSearch": {
+    "message": "Showing the first $1 items. Search to narrow the list."
+  },
+  "regenerate": {
+    "message": "Regenerate"
+  },
+  "rememberDevice": {
+    "message": "Remember this device"
+  },
+  "remove": {
+    "message": "Remove"
+  },
+  "restore": {
+    "message": "Restore"
+  },
+  "results": {
+    "message": "Results"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "saveSite": {
+    "message": "Save site"
+  },
+  "saveSiteDesc": {
+    "message": "$1 isn't saved for this site yet. Save it so it's suggested here next time."
+  },
+  "saveSiteTitle": {
+    "message": "Save $1 to this login?"
+  },
+  "scanQrOnPage": {
+    "message": "Scan QR code on page"
+  },
+  "searchVault": {
+    "message": "Search vault"
+  },
+  "secondsLeft": {
+    "message": "$1 seconds left"
+  },
+  "security": {
+    "message": "Security"
+  },
+  "securityCode": {
+    "message": "Security code"
+  },
+  "selfHosted": {
+    "message": "Self-hosted"
+  },
+  "sendVerificationCodeEmail": {
+    "message": "Send code to email"
+  },
+  "server": {
+    "message": "Server"
+  },
+  "serverUrl": {
+    "message": "Server URL"
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "show": {
+    "message": "Show"
+  },
+  "showWebsiteIcons": {
+    "message": "Show website icons"
+  },
+  "signIn": {
+    "message": "Sign in"
+  },
+  "signInDesc": {
+    "message": "Unlock your vault with your Bitwarden account."
+  },
+  "signingIn": {
+    "message": "Signing in…"
+  },
+  "siteSaved": {
+    "message": "Site saved"
+  },
+  "somethingWentWrong": {
+    "message": "Something went wrong"
+  },
+  "ssn": {
+    "message": "Social security number"
+  },
+  "ssoNotSupported": {
+    "message": "Your organization requires single sign-on, which isn't supported yet."
+  },
+  "stateProvince": {
+    "message": "State / province"
+  },
+  "symbols": {
+    "message": "Symbols"
+  },
+  "sync": {
+    "message": "Sync"
+  },
+  "syncingComplete": {
+    "message": "Sync complete"
+  },
+  "syncVaultNow": {
+    "message": "Not synced yet"
+  },
+  "textField": {
+    "message": "Text"
+  },
+  "thirtyMinutes": {
+    "message": "30 minutes"
+  },
+  "thirtySeconds": {
+    "message": "30 seconds"
+  },
+  "thisPage": {
+    "message": "This page"
+  },
+  "titleHonorific": {
+    "message": "Title"
+  },
+  "trash": {
+    "message": "Trash"
+  },
+  "trashEmpty": {
+    "message": "Trash is empty"
+  },
+  "trashHint": {
+    "message": "Open an item to restore or delete it"
+  },
+  "tryAgain": {
+    "message": "Try again"
+  },
+  "twoFactorAuthenticator": {
+    "message": "Authenticator"
+  },
+  "twoFactorAuthenticatorDesc": {
+    "message": "Enter the 6-digit code from your authenticator app."
+  },
+  "twoFactorDuo": {
+    "message": "Duo"
+  },
+  "twoFactorEmail": {
+    "message": "Email"
+  },
+  "twoFactorEmailDesc": {
+    "message": "Enter the code we sent to your email."
+  },
+  "twoFactorUnsupported": {
+    "message": "Your account only has two-step login methods this extension doesn't support yet (Duo or passkey). Add an authenticator app or email method to log in here."
+  },
+  "twoFactorWebAuthn": {
+    "message": "Passkey"
+  },
+  "twoFactorYubikey": {
+    "message": "YubiKey"
+  },
+  "twoFactorYubikeyDesc": {
+    "message": "Insert your YubiKey and touch it to enter a code."
+  },
+  "twoMinutes": {
+    "message": "2 minutes"
+  },
+  "twoStepLogin": {
+    "message": "Two-step login"
+  },
+  "typeCard": {
+    "message": "Card"
+  },
+  "typeCardDesc": {
+    "message": "Payment card details"
+  },
+  "typeIdentity": {
+    "message": "Identity"
+  },
+  "typeIdentityDesc": {
+    "message": "Name, address and IDs"
+  },
+  "typeLogin": {
+    "message": "Login"
+  },
+  "typeLoginDesc": {
+    "message": "Username, password and websites"
+  },
+  "typeNote": {
+    "message": "Secure note"
+  },
+  "typeNoteDesc": {
+    "message": "Encrypted free-form text"
+  },
+  "unfavorite": {
+    "message": "Remove from favorites"
+  },
+  "unlock": {
+    "message": "Unlock"
+  },
+  "unlockToFill": {
+    "message": "Open the extension to unlock"
+  },
+  "unlockWithPin": {
+    "message": "Unlock with PIN"
+  },
+  "updated": {
+    "message": "Updated"
+  },
+  "useMasterPassword": {
+    "message": "Use master password"
+  },
+  "usePin": {
+    "message": "Use PIN"
+  },
+  "username": {
+    "message": "Username"
+  },
+  "value": {
+    "message": "Value"
+  },
+  "valueCopied": {
+    "message": "$1 copied"
+  },
+  "vault": {
+    "message": "Vault"
+  },
+  "vaultEmpty": {
+    "message": "Your vault is empty"
+  },
+  "vaultLockedInline": {
+    "message": "Vault is locked"
+  },
+  "vaultTimeout": {
+    "message": "Vault timeout"
+  },
+  "verificationCode": {
+    "message": "Verification code"
+  },
+  "verificationCodeSent": {
+    "message": "Verification code sent"
+  },
+  "verifyItsYou": {
+    "message": "Verify it's you"
+  },
+  "verifyYourIdentity": {
+    "message": "Verify your identity"
+  },
+  "website": {
+    "message": "Website"
+  },
+  "websites": {
+    "message": "Websites"
+  },
+  "wordSeparator": {
+    "message": "Word separator"
+  }
+}

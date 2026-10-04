@@ -1,0 +1,36 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "browser-lite",
+  "projectType": "application",
+  "sourceRoot": "apps/browser-lite/src",
+  "tags": ["scope:browser-lite", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/browser-lite"],
+      "options": {
+        "command": "npm run build",
+        "cwd": "apps/browser-lite",
+        "env": { "NODE_ENV": "production" }
+      }
+    },
+    "build-dev": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/browser-lite"],
+      "options": {
+        "command": "npm run build",
+        "cwd": "apps/browser-lite",
+        "env": { "NODE_ENV": "development" }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/browser-lite"],
+      "options": { "jestConfig": "apps/browser-lite/jest.config.js" }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": { "lintFilePatterns": ["apps/browser-lite/src/**/*.{ts,tsx}"] }
+    }
+  }
+}
