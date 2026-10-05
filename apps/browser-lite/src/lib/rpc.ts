@@ -118,6 +118,22 @@ export type FillResult =
     }
   | { kind: "nothingToFill" };
 
+export const VaultTimeout = Object.freeze({
+  /** Only when the browser restarts (session storage is cleared then). */
+  OnRestart: 0,
+  /** When the computer locks or the screensaver starts. */
+  OnSystemLock: -1,
+} as const);
+
+/** Why the vault is locked, shown on the lock screen. Absent after a browser or extension restart. */
+export const LockReason = Object.freeze({
+  Timeout: "timeout",
+  SystemLock: "systemLock",
+  Manual: "manual",
+  RestoreFailed: "restoreFailed",
+} as const);
+export type LockReason = (typeof LockReason)[keyof typeof LockReason];
+
 export interface Status {
   /** Build of the running service worker; the popup refuses to talk to a different one. */
   buildId: string;
@@ -125,6 +141,7 @@ export interface Status {
   email?: string;
   pinEnabled: boolean;
   lastSync?: number;
+  lockReason?: LockReason;
 }
 
 export const CopyableField = Object.freeze({
@@ -139,9 +156,12 @@ export type GeneratorRequest =
   | { kind: "passphrase"; options: PassphraseGeneratorRequest };
 
 export interface Settings {
-  /** Minutes of inactivity before locking; `null` means never, `0` means on browser restart only. */
+  /**
+   * Minutes of inactivity before locking, or one of the `VaultTimeout` sentinels. As in the
+   * reference client, "on system lock" is a timeout choice of its own, so it can't silently
+   * override "on browser restart".
+   */
   vaultTimeoutMinutes: number | null;
-  lockOnSystemIdle: boolean;
   clearClipboardSeconds: number | null;
   /** Copy the item's one-time code after autofill, for the site's 2FA step. */
   copyTotpOnFill: boolean;

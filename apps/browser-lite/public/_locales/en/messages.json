@@ -248,8 +248,17 @@
   "lockNow": {
     "message": "Lock now"
   },
-  "lockOnSystemLock": {
-    "message": "Lock when the computer locks"
+  "lockReasonManual": {
+    "message": "You locked the vault"
+  },
+  "lockReasonRestoreFailed": {
+    "message": "Session couldn't be restored. Unlock again."
+  },
+  "lockReasonSystemLock": {
+    "message": "Locked when your computer locked"
+  },
+  "lockReasonTimeout": {
+    "message": "Locked after inactivity"
   },
   "logOut": {
     "message": "Log out"
@@ -355,6 +364,9 @@
   },
   "onRestart": {
     "message": "On browser restart"
+  },
+  "onSystemLock": {
+    "message": "On system lock"
   },
   "open": {
     "message": "open"

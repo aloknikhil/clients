@@ -1,3 +1,5 @@
+import { LockReason, VaultTimeout } from "../lib/rpc";
+
 import { getSettings } from "./settings";
 import { vault } from "./vault";
 
@@ -16,14 +18,14 @@ async function checkTimeout(): Promise<void> {
     return;
   }
   const { vaultTimeoutMinutes } = await getSettings();
-  // null = never, 0 = only on browser restart (session storage handles that by itself).
-  if (vaultTimeoutMinutes === null || vaultTimeoutMinutes === 0) {
+  // null = never; OnRestart (session storage handles it); OnSystemLock (handled by idle below).
+  if (vaultTimeoutMinutes === null || vaultTimeoutMinutes <= VaultTimeout.OnRestart) {
     return;
   }
   const stored = await chrome.storage.session.get(LAST_ACTIVITY_KEY);
   const lastActivity = (stored[LAST_ACTIVITY_KEY] as number | undefined) ?? 0;
   if (Date.now() - lastActivity >= vaultTimeoutMinutes * 60_000) {
-    await vault.lock();
+    await vault.lock(LockReason.Timeout);
   }
 }
 
@@ -38,9 +40,10 @@ export function registerLockListeners(): void {
     if (state !== "locked") {
       return;
     }
+    // Only when the user chose "on system lock": it must not override "on browser restart".
     void getSettings().then((settings) => {
-      if (settings.lockOnSystemIdle) {
-        void vault.lock();
+      if (settings.vaultTimeoutMinutes === VaultTimeout.OnSystemLock && vault.unlocked) {
+        void vault.lock(LockReason.SystemLock);
       }
     });
   });

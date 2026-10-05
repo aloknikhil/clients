@@ -12,6 +12,7 @@ import type {
 import { accessToken, serverUrls } from "../lib/api";
 import { CLIENT_VERSION, deviceIdentifier } from "../lib/device";
 import { StorageRepository } from "../lib/repository";
+import { LockReason } from "../lib/rpc";
 import { ManagedSettingsClient, PasswordManagerClient, loadSdk } from "../lib/sdk";
 
 import type { Account } from "./account";
@@ -23,6 +24,7 @@ import { createStateBridge } from "./state-bridge";
  * does after ~30s idle. Cleared on lock.
  */
 const SESSION_USER_KEY = "userKey";
+const LOCK_REASON_KEY = "lockReason";
 
 export const repositories = {
   ciphers: new StorageRepository<Cipher>("ciphers"),
@@ -77,9 +79,26 @@ class VaultSession {
     }
     const stored = await chrome.storage.session.get(SESSION_USER_KEY);
     const userKey = stored[SESSION_USER_KEY] as string | undefined;
-    if (userKey !== undefined) {
-      await this.unlock(account, { decryptedKey: { decrypted_user_key: userKey } });
+    if (userKey === undefined) {
+      return;
     }
+    try {
+      await this.unlock(account, { decryptedKey: { decrypted_user_key: userKey } });
+    } catch (e) {
+      // Never silent: the lock screen says the session couldn't be restored, and the error name
+      // (no key material or vault data) goes to the service worker console.
+      // eslint-disable-next-line no-console -- the only diagnostic for an otherwise invisible lock
+      console.error(
+        `[browser-lite] session restore failed: ${e instanceof Error ? e.name : "unknown"}`,
+      );
+      await this.lock(LockReason.RestoreFailed);
+    }
+  }
+
+  /** Why the vault was last locked in this browser session, if it was locked by us. */
+  async lockReason(): Promise<LockReason | undefined> {
+    return (await chrome.storage.session.get(LOCK_REASON_KEY))[LOCK_REASON_KEY] as
+      LockReason | undefined;
   }
 
   /** Throws if the key material doesn't decrypt (wrong password/PIN). */
@@ -120,6 +139,7 @@ class VaultSession {
     await chrome.storage.session.set({
       [SESSION_USER_KEY]: await client.crypto().get_user_encryption_key(),
     });
+    await chrome.storage.session.remove(LOCK_REASON_KEY);
   }
 
   /** Org keys change on sync (joined/left an org), so this is re-run after every sync. */
@@ -130,11 +150,16 @@ class VaultSession {
     }
   }
 
-  async lock(): Promise<void> {
+  async lock(reason?: LockReason): Promise<void> {
     this.client?.free();
     this.client = undefined;
     this.listCache = undefined;
     await chrome.storage.session.remove(SESSION_USER_KEY);
+    if (reason === undefined) {
+      await chrome.storage.session.remove(LOCK_REASON_KEY);
+    } else {
+      await chrome.storage.session.set({ [LOCK_REASON_KEY]: reason });
+    }
   }
 
   /** Logout: drop keys and all cached vault data. */

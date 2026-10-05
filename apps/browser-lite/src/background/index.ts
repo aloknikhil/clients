@@ -1,5 +1,12 @@
 import { getEnvironment, setEnvironment } from "../lib/env";
-import { AuthStatus, CopyableField, isRpcRequest, type Rpc, type RpcResponse } from "../lib/rpc";
+import {
+  AuthStatus,
+  CopyableField,
+  isRpcRequest,
+  LockReason,
+  type Rpc,
+  type RpcResponse,
+} from "../lib/rpc";
 import { PureCrypto, loadSdk } from "../lib/sdk";
 
 import { getAccount, updateAccount } from "./account";
@@ -67,6 +74,7 @@ const handlers: Handlers = {
       email: account.email,
       pinEnabled: account.pinProtectedUserKeyEnvelope !== undefined,
       lastSync: await lastSync(),
+      lockReason: vault.unlocked ? undefined : await vault.lockReason(),
     };
   },
   getEnvironment,
@@ -122,7 +130,7 @@ const handlers: Handlers = {
     await updateAccount({ pinProtectedUserKeyEnvelope });
   },
   async lock() {
-    await vault.lock();
+    await vault.lock(LockReason.Manual);
   },
   logout,
 

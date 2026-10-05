@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 
 import type { Environment } from "../../lib/env";
 import { t } from "../../lib/i18n";
-import { call, type Settings as SettingsModel, type Status } from "../../lib/rpc";
+import { call, type Settings as SettingsModel, type Status, VaultTimeout } from "../../lib/rpc";
 import { urlsFor } from "../../lib/env";
 import { ErrorText, Icon, Spinner, Switch, Topbar, useAction, useToast } from "../components";
 
@@ -13,7 +13,8 @@ const TIMEOUTS: { value: string; label: string }[] = [
   { value: "30", label: "thirtyMinutes" },
   { value: "60", label: "oneHour" },
   { value: "240", label: "fourHours" },
-  { value: "0", label: "onRestart" },
+  { value: String(VaultTimeout.OnSystemLock), label: "onSystemLock" },
+  { value: String(VaultTimeout.OnRestart), label: "onRestart" },
 ];
 
 const CLIPBOARD: { value: string; label: string }[] = [
@@ -107,13 +108,6 @@ export function Settings({
                 </option>
               ))}
             </select>
-          </Option>
-          <Option label={t("lockOnSystemLock")}>
-            <Switch
-              checked={settings.lockOnSystemIdle}
-              label={t("lockOnSystemLock")}
-              onChange={(v) => void update({ lockOnSystemIdle: v })}
-            />
           </Option>
           <Option label={t("unlockWithPin")}>
             <Switch

@@ -1,8 +1,15 @@
 import { useState } from "preact/hooks";
 
 import { t } from "../../lib/i18n";
-import { call, type Status } from "../../lib/rpc";
+import { call, LockReason, type Status } from "../../lib/rpc";
 import { ErrorText, Icon, Mark, Spinner, useAction } from "../components";
+
+const LOCK_REASON_LABELS: Record<LockReason, string> = {
+  [LockReason.Timeout]: "lockReasonTimeout",
+  [LockReason.SystemLock]: "lockReasonSystemLock",
+  [LockReason.Manual]: "lockReasonManual",
+  [LockReason.RestoreFailed]: "lockReasonRestoreFailed",
+};
 
 export function Lock({
   status,
@@ -48,6 +55,11 @@ export function Lock({
           <p class="faint mono" style={{ margin: 0, fontSize: "12px" }}>
             {status.email}
           </p>
+          {status.lockReason && (
+            <p class="faint" style={{ margin: 0, fontSize: "12px" }}>
+              {t(LOCK_REASON_LABELS[status.lockReason])}
+            </p>
+          )}
         </div>
         <div class="stack">
           <div class="input-group">
