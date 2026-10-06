@@ -67,7 +67,7 @@ describe("sanitizeRequest (page-controlled input)", () => {
     ["unknown kind", { ...get, kind: "sign" }],
     ["non-base64url challenge", { ...get, challenge: "a+b/c=" }],
     ["numeric challenge", { ...get, challenge: 42 }],
-    ["oversized allow list", { ...get, allowCredentials: Array(65).fill("AA") }],
+    ["oversized allow list", { ...get, allowCredentials: Array(257).fill("AA") }],
     ["non-string rpId", { ...get, rpId: { host: "x" } }],
     ["create without user", { ...create, user: undefined }],
     [
@@ -76,5 +76,16 @@ describe("sanitizeRequest (page-controlled input)", () => {
     ],
   ])("rejects %s", (_, input) => {
     expect(sanitizeRequest(input)).toBeUndefined();
+  });
+
+  it("accepts the multi-KB challenges real sites send", () => {
+    const challenge = "A".repeat(12_000);
+    expect(sanitizeRequest({ ...get, challenge })?.challenge).toBe(challenge);
+  });
+
+  it("names the rejected field, not its value", () => {
+    const onInvalid = jest.fn();
+    sanitizeRequest({ ...get, rpId: { host: "secret" } }, onInvalid);
+    expect(onInvalid).toHaveBeenCalledWith("rpId");
   });
 });

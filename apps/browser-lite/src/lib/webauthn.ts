@@ -102,31 +102,53 @@ export function sameBytes(a: Uint8Array, b: Uint8Array): boolean {
 }
 
 const B64URL = /^[A-Za-z0-9_-]*$/;
+/**
+ * Generous on purpose: the spec sets no maximum for challenges, and real RPs send big ones (Google's
+ * sign-in challenge is several KB). These caps only bound message size.
+ */
+const MAX_B64 = 64 * 1024;
+const MAX_CREDENTIALS = 256;
 const isStr = (v: unknown, max = 2048): v is string => typeof v === "string" && v.length <= max;
-const isB64 = (v: unknown): v is string => isStr(v, 8192) && B64URL.test(v);
+const isB64 = (v: unknown): v is string => isStr(v, MAX_B64) && B64URL.test(v);
 const optStr = (v: unknown) => v === undefined || isStr(v);
+const b64List = (v: unknown) => Array.isArray(v) && v.length <= MAX_CREDENTIALS && v.every(isB64);
 
-/** The page controls the request entirely: accept only well-formed shapes. */
-export function sanitizeRequest(raw: unknown): WebAuthnRequest | undefined {
-  if (typeof raw !== "object" || raw === null) {
+/** Name of the first failed check, so a rejected request says which field was wrong. */
+function firstInvalid(checks: Record<string, boolean>): string | undefined {
+  return Object.entries(checks).find(([, ok]) => !ok)?.[0];
+}
+
+/**
+ * The page controls the request entirely: accept only well-formed shapes. `onInvalid` gets the
+ * name of the offending field (never its value).
+ */
+export function sanitizeRequest(
+  raw: unknown,
+  onInvalid?: (field: string) => void,
+): WebAuthnRequest | undefined {
+  const reject = (field: string) => {
+    onInvalid?.(field);
     return undefined;
+  };
+  if (typeof raw !== "object" || raw === null) {
+    return reject("request");
   }
   const r = raw as Record<string, unknown>;
-  const b64List = (v: unknown) => Array.isArray(v) && v.length <= 64 && v.every(isB64);
   if (r.kind === "get") {
-    if (
-      !isB64(r.challenge) ||
-      !b64List(r.allowCredentials) ||
-      !optStr(r.rpId) ||
-      !optStr(r.mediation) ||
-      !optStr(r.userVerification)
-    ) {
-      return undefined;
+    const invalid = firstInvalid({
+      challenge: isB64(r.challenge),
+      allowCredentials: b64List(r.allowCredentials),
+      rpId: optStr(r.rpId),
+      mediation: optStr(r.mediation),
+      userVerification: optStr(r.userVerification),
+    });
+    if (invalid) {
+      return reject(invalid);
     }
     return {
       kind: "get",
       rpId: r.rpId as string | undefined,
-      challenge: r.challenge,
+      challenge: r.challenge as string,
       allowCredentials: r.allowCredentials as string[],
       userVerification: r.userVerification as UserVerificationRequirement | undefined,
       mediation: r.mediation as CredentialMediationRequirement | undefined,
@@ -137,33 +159,40 @@ export function sanitizeRequest(raw: unknown): WebAuthnRequest | undefined {
     const rp = r.rp as Record<string, unknown> | undefined;
     const user = r.user as Record<string, unknown> | undefined;
     const params = r.pubKeyCredParams;
-    if (
-      !rp ||
-      !user ||
-      !isB64(r.challenge) ||
-      !b64List(r.excludeCredentials) ||
-      !optStr(rp.id) ||
-      !isStr(rp.name) ||
-      !isB64(user.id) ||
-      !isStr(user.name) ||
-      !isStr(user.displayName) ||
-      !Array.isArray(params) ||
-      params.length > 32 ||
-      !params.every(
-        (p) =>
-          typeof p === "object" &&
-          p !== null &&
-          typeof (p as { alg?: unknown }).alg === "number" &&
-          isStr((p as { type?: unknown }).type),
-      )
-    ) {
-      return undefined;
+    if (!rp || !user) {
+      return reject(rp ? "user" : "rp");
+    }
+    const invalid = firstInvalid({
+      challenge: isB64(r.challenge),
+      excludeCredentials: b64List(r.excludeCredentials),
+      "rp.id": optStr(rp.id),
+      "rp.name": isStr(rp.name),
+      "user.id": isB64(user.id),
+      "user.name": isStr(user.name),
+      "user.displayName": isStr(user.displayName),
+      pubKeyCredParams:
+        Array.isArray(params) &&
+        params.length <= 32 &&
+        params.every(
+          (p) =>
+            typeof p === "object" &&
+            p !== null &&
+            typeof (p as { alg?: unknown }).alg === "number" &&
+            isStr((p as { type?: unknown }).type),
+        ),
+    });
+    if (invalid) {
+      return reject(invalid);
     }
     return {
       kind: "create",
-      rp: { id: rp.id as string | undefined, name: rp.name },
-      user: { id: user.id, name: user.name, displayName: user.displayName },
-      challenge: r.challenge,
+      rp: { id: rp.id as string | undefined, name: rp.name as string },
+      user: {
+        id: user.id as string,
+        name: user.name as string,
+        displayName: user.displayName as string,
+      },
+      challenge: r.challenge as string,
       pubKeyCredParams: params as { type: string; alg: number }[],
       excludeCredentials: r.excludeCredentials as string[],
       residentKey: r.residentKey as ResidentKeyRequirement | undefined,
@@ -173,5 +202,5 @@ export function sanitizeRequest(raw: unknown): WebAuthnRequest | undefined {
       timeout: typeof r.timeout === "number" ? r.timeout : undefined,
     };
   }
-  return undefined;
+  return reject("kind");
 }

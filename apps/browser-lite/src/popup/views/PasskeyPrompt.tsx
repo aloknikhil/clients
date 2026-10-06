@@ -65,6 +65,8 @@ export function PasskeyPrompt({ id }: { id: string }) {
   }
 
   const creating = prompt.kind === "create";
+  // Nothing of ours fits: the browser's own authenticators (phone, security key) are the way on.
+  const noMatch = !creating && prompt.choices.length === 0;
   return (
     <div class="prompt-card">
       <header class="prompt-head">
@@ -147,14 +149,15 @@ export function PasskeyPrompt({ id }: { id: string }) {
             </button>
           ))}
         </div>
-        {!creating && prompt.choices.length === 0 && <p class="muted">{t("noPasskeysForSite")}</p>}
+        {noMatch && <p class="muted">{t("noPasskeysForSite")}</p>}
       </div>
 
       <footer class="prompt-foot">
         {prompt.fallbackSupported ? (
           <button
             type="button"
-            class="btn ghost"
+            class={noMatch ? "btn primary" : "btn ghost"}
+            autoFocus={noMatch}
             onClick={() => void choose.run({ fallback: true })}
           >
             {t("useAnotherDevice")}

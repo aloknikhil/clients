@@ -39,6 +39,7 @@ import {
 
 import { decryptCipher } from "./ciphers";
 import { saveCipher } from "./edit";
+import { fullSync } from "./sync";
 import { vault } from "./vault";
 
 /** Bitwarden's authenticator AAGUID (d548826e-79b4-db40-a3d8-11116f7e8349), as in the reference. */
@@ -419,16 +420,14 @@ async function begin(
 
   const conditional = request.kind === "get" && request.mediation === "conditional";
   if (!conditional) {
-    if (
-      request.kind === "get" &&
-      vault.unlocked &&
-      (await candidatesFor(rpId, request)).length === 0
-    ) {
-      settle(
-        id,
-        fallbackSupported ? { ok: false, fallback: true } : fail("NotAllowedError", "No passkeys"),
-      );
-      return;
+    // Like the reference: a passkey saved on another device may not be here yet, so sync before
+    // deciding there's none. Either way the prompt opens: with no match it says so and offers the
+    // browser's own authenticators, rather than handing off silently.
+    if (request.kind === "get" && vault.unlocked) {
+      const found = (await candidatesFor(rpId, request)).length > 0;
+      if (!found) {
+        await fullSync().catch(() => undefined);
+      }
     }
     const timeout = Math.min(request.timeout ?? DEFAULT_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
     setTimeout(() => settle(id, fail("NotAllowedError", "The operation timed out")), timeout);
@@ -583,9 +582,10 @@ export function registerWebAuthnListeners(ready: Promise<unknown>): void {
           return;
         }
         if (message.request !== undefined && requestId === undefined) {
-          const request = sanitizeRequest(message.request);
+          let field = "request";
+          const request = sanitizeRequest(message.request, (f) => (field = f));
           if (!request) {
-            reply(fail("TypeError", "Invalid request"));
+            reply(fail("TypeError", `Invalid request: ${field}`));
             return;
           }
           void ready

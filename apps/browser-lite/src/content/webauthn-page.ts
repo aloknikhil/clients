@@ -159,7 +159,12 @@ const ACK_TIMEOUT_MS = 1000;
     options?: CredentialRequestOptions,
   ): Promise<Credential | null> {
     const pk = options?.publicKey;
-    if (!pk) {
+    // Every allowed credential lives on a security key (usb/nfc/ble only): nothing we hold can
+    // answer, so go straight to the browser, as the reference does.
+    const external =
+      pk?.allowCredentials?.length &&
+      pk.allowCredentials.every((c) => c.transports?.length && !c.transports.includes("internal"));
+    if (!pk || external) {
       return nativeGet(options);
     }
     const request: GetRequest = {
