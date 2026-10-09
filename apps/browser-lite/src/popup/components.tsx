@@ -4,6 +4,8 @@ import { useCallback, useContext, useEffect, useState } from "preact/hooks";
 
 import {
   ArrowRight,
+  ArrowRightLeft,
+  Building,
   Check,
   ChevronLeft,
   Clock,
@@ -71,6 +73,8 @@ const ICONS = {
   folderPlus: FolderPlus,
   shield: ShieldCheck,
   warning: TriangleAlert,
+  org: Building,
+  move: ArrowRightLeft,
 } as const;
 
 export type IconName = keyof typeof ICONS;

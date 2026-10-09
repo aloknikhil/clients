@@ -2,10 +2,12 @@ import type {
   Cipher,
   CipherListView,
   ClientSettings,
+  Collection,
   Folder,
   InitUserCryptoMethod,
   LocalUserDataKeyState,
   OrganizationSharedKey,
+  Policy,
   Send,
 } from "@bitwarden/sdk-internal";
 
@@ -16,6 +18,7 @@ import { LockReason } from "../lib/rpc";
 import { ManagedSettingsClient, PasswordManagerClient, loadSdk } from "../lib/sdk";
 
 import type { Account } from "./account";
+import type { StoredOrganization } from "./orgs";
 import { createStateBridge } from "./state-bridge";
 
 /**
@@ -28,6 +31,10 @@ const LOCK_REASON_KEY = "lockReason";
 
 export const repositories = {
   ciphers: new StorageRepository<Cipher>("ciphers"),
+  // Not SDK-managed: synced here, read by orgs.ts. Collection names stay encrypted at rest.
+  collections: new StorageRepository<Collection>("collections"),
+  organizations: new StorageRepository<StoredOrganization>("organizations"),
+  policies: new StorageRepository<Policy>("policies"),
   folders: new StorageRepository<Folder>("folders"),
   sends: new StorageRepository<Send>("sends"),
   localUserDataKey: new StorageRepository<LocalUserDataKeyState>("localUserDataKey"),

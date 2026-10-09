@@ -11,8 +11,14 @@
   "addWebsite": {
     "message": "Add website"
   },
+  "allCollections": {
+    "message": "All collections"
+  },
   "allItems": {
     "message": "All items"
+  },
+  "allVaults": {
+    "message": "All vaults"
   },
   "authenticatorKey": {
     "message": "Authenticator key"
@@ -65,6 +71,12 @@
   "codeCopiedForNextStep": {
     "message": "Code copied for the next step"
   },
+  "collection": {
+    "message": "Collection"
+  },
+  "collections": {
+    "message": "Collections"
+  },
   "commandAutofillLogin": {
     "message": "Autofill login"
   },
@@ -109,6 +121,9 @@
   },
   "customFields": {
     "message": "Custom fields"
+  },
+  "default": {
+    "message": "Default"
   },
   "deletedOn": {
     "message": "Deleted $1"
@@ -218,6 +233,9 @@
   "itemDeleted": {
     "message": "Item deleted"
   },
+  "itemMoved": {
+    "message": "Item moved"
+  },
   "itemRestored": {
     "message": "Item restored"
   },
@@ -296,14 +314,29 @@
   "middleName": {
     "message": "Middle name"
   },
+  "move": {
+    "message": "Move"
+  },
   "movedToTrash": {
     "message": "Moved to trash"
+  },
+  "moveNoteCollections": {
+    "message": "Changes which collections this item is in."
+  },
+  "moveNoteCopy": {
+    "message": "Bitwarden can't move items out of an organization, so a copy is saved to $1 and the original goes to the trash. Password history isn't copied."
+  },
+  "moveNoteShare": {
+    "message": "The item moves into $1, and the organization's members with access to these collections can see it. It can't be moved back to your vault."
   },
   "moveToTrash": {
     "message": "Move to trash"
   },
   "moveToTrashQuestion": {
     "message": "Move this item to the trash?"
+  },
+  "myVault": {
+    "message": "My vault"
   },
   "name": {
     "message": "Name"
@@ -347,6 +380,9 @@
   "notNow": {
     "message": "Not now"
   },
+  "noWritableCollections": {
+    "message": "You can't add items to any collection in this organization."
+  },
   "number": {
     "message": "Number"
   },
@@ -376,6 +412,9 @@
   },
   "options": {
     "message": "Options"
+  },
+  "owner": {
+    "message": "Owner"
   },
   "passkey": {
     "message": "Passkey"
@@ -430,6 +469,9 @@
   },
   "qrNotFound": {
     "message": "No authenticator QR code visible on this page"
+  },
+  "readOnlyCollection": {
+    "message": "Read-only collection: the item stays in it"
   },
   "readOnlyItem": {
     "message": "You can only change the folder and favorite of this item."

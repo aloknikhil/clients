@@ -1,8 +1,9 @@
 import type { CipherView, CipherViewType } from "@bitwarden/sdk-internal";
 
-import type { Folder } from "../lib/rpc";
+import type { Folder, ItemOwner } from "../lib/rpc";
 
 import { decryptCipher } from "./ciphers";
+import { checkOwner, listOrganizations } from "./orgs";
 import { repositories, vault } from "./vault";
 
 /** SDK `CipherType`. */
@@ -14,7 +15,7 @@ const CipherType = Object.freeze({
   SshKey: 5,
 } as const);
 
-function typeOf(view: CipherView): CipherViewType {
+export function typeOf(view: CipherView): CipherViewType {
   switch (view.type) {
     case CipherType.Login:
       return { login: view.login! };
@@ -66,9 +67,14 @@ export async function saveCipher(draft: CipherView): Promise<string> {
   }
 
   if (view.id === undefined) {
+    const owner: ItemOwner = {
+      organizationId: view.organizationId === undefined ? undefined : String(view.organizationId),
+      collectionIds: (view.collectionIds ?? []).map(String),
+    };
+    checkOwner(owner, await listOrganizations());
     const created = await ciphers.create({
-      organizationId: undefined,
-      collectionIds: [],
+      organizationId: owner.organizationId as never,
+      collectionIds: owner.organizationId === undefined ? [] : (owner.collectionIds as never),
       folderId: view.folderId,
       name: view.name,
       notes: view.notes,

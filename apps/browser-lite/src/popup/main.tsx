@@ -19,6 +19,7 @@ import { Generator } from "./views/Generator";
 import { Item } from "./views/Item";
 import { Lock } from "./views/Lock";
 import { Login } from "./views/Login";
+import { Move } from "./views/Owner";
 import { NewDevice } from "./views/NewDevice";
 import { PasskeyPrompt } from "./views/PasskeyPrompt";
 import { Settings } from "./views/Settings";
@@ -31,6 +32,7 @@ type Screen =
   | { name: "item"; id: string; from: "vault" | "trash" }
   | { name: "new" }
   | { name: "edit"; id?: string; type?: CipherTypeValue }
+  | { name: "move"; id: string }
   | { name: "generator" }
   | { name: "settings" }
   | { name: "trash" };
@@ -145,6 +147,7 @@ function App() {
           id={screen.id}
           onBack={() => setScreen(from === "trash" ? { name: "trash" } : { name: "vault" })}
           onEdit={(id) => setScreen({ name: "edit", id })}
+          onMove={(id) => setScreen({ name: "move", id })}
         />
       );
       break;
@@ -160,6 +163,17 @@ function App() {
           type={screen.type}
           onSaved={(savedId) => setScreen({ name: "item", id: savedId, from: "vault" })}
           onCancel={() => setScreen(id ? { name: "item", id, from: "vault" } : { name: "vault" })}
+        />
+      );
+      break;
+    }
+    case "move": {
+      const { id } = screen;
+      content = (
+        <Move
+          id={id}
+          onDone={(movedId) => setScreen({ name: "item", id: movedId, from: "vault" })}
+          onCancel={() => setScreen({ name: "item", id, from: "vault" })}
         />
       );
       break;

@@ -35,6 +35,7 @@ import { describeRequest, registerWebAuthnListeners, respond as respondToWebAuth
 import { MENU_PATH, registerInlineMenuListeners, syncInlineMenuRegistration } from "./inline";
 import { toVaultItem } from "./items";
 import { recordActivity, registerLockListeners } from "./lock";
+import { listOrganizations, moveCipher } from "./orgs";
 import { getSettings, setSettings } from "./settings";
 import { fullSync, lastSync } from "./sync";
 import { previewTotp, scanTotpQr } from "./totp";
@@ -175,6 +176,8 @@ const handlers: Handlers = {
   },
   listFolders,
   createFolder,
+  listOrganizations,
+  moveCipher,
   webauthnRequest: describeRequest,
   webauthnRespond: respondToWebAuthn,
   async previewTotp(key) {

@@ -1,4 +1,4 @@
-import type { Cipher, Folder, Send } from "@bitwarden/sdk-internal";
+import type { Cipher, Collection, Folder, Policy, Send } from "@bitwarden/sdk-internal";
 
 import { prop } from "../lib/props";
 
@@ -203,4 +203,40 @@ export function toSdkSend(s: unknown): Send {
 
 export function toSdkFolder(f: unknown): Folder {
   return pick<Folder>(f, ["id", "name", "revisionDate"])!;
+}
+
+const COLLECTION_FIELDS = [
+  "id",
+  "organizationId",
+  "name",
+  "externalId",
+  "hidePasswords",
+  "readOnly",
+  "manage",
+  "defaultUserCollectionEmail",
+  "type",
+] as const;
+
+export function toSdkCollection(c: unknown): Collection {
+  const collection = pick<Collection>(c, COLLECTION_FIELDS)!;
+  return {
+    ...collection,
+    hidePasswords: collection.hidePasswords === true,
+    readOnly: collection.readOnly === true,
+    manage: collection.manage === true,
+    type: (collection.type ?? 0) as Collection["type"],
+  };
+}
+
+/** The SDK takes policy data as a JSON string; the server sends an object. */
+export function toSdkPolicy(p: unknown): Policy {
+  const data = prop<unknown>(p, "data");
+  return {
+    id: prop<string>(p, "id") as never,
+    organizationId: prop<string>(p, "organizationId") as never,
+    type: prop<number>(p, "type") as Policy["type"],
+    data: data == null ? undefined : JSON.stringify(data),
+    enabled: prop<boolean>(p, "enabled") === true,
+    revisionDate: prop<string>(p, "revisionDate") ?? undefined,
+  };
 }

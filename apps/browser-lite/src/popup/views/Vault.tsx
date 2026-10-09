@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 
 import { t } from "../../lib/i18n";
-import { call, CopyableField, FillMode, ItemKind, type VaultItem } from "../../lib/rpc";
+import {
+  call,
+  CopyableField,
+  FillMode,
+  ItemKind,
+  type Organization,
+  type VaultItem,
+} from "../../lib/rpc";
 import { ErrorText, Icon, IconButton, Mark, Tile, useToast } from "../components";
 
 import { SaveSite } from "./SaveSite";
@@ -11,6 +18,38 @@ import { Reprompt } from "./Reprompt";
 const MAX_ROWS = 200;
 /** Per-device view preference, not vault data. */
 const FAVORITES_KEY = "favoritesOnly";
+/** Per-device view preference: which vault (and collection) the list shows. */
+const FILTER_KEY = "vaultFilter";
+const ALL_VAULTS = "all";
+const MY_VAULT = "personal";
+
+interface VaultFilter {
+  /** `ALL_VAULTS`, `MY_VAULT`, or an organization id. */
+  vault: string;
+  collectionId?: string;
+}
+
+function readFilter(): VaultFilter {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(FILTER_KEY) ?? "null") as VaultFilter | null;
+    return parsed && typeof parsed.vault === "string" ? parsed : { vault: ALL_VAULTS };
+  } catch {
+    return { vault: ALL_VAULTS };
+  }
+}
+
+function inFilter(item: VaultItem, filter: VaultFilter): boolean {
+  if (filter.vault === ALL_VAULTS) {
+    return true;
+  }
+  if (filter.vault === MY_VAULT) {
+    return item.organizationId === undefined;
+  }
+  return (
+    item.organizationId === filter.vault &&
+    (filter.collectionId === undefined || item.collectionIds.includes(filter.collectionId))
+  );
+}
 
 type Section = "suggested" | "favorites" | "all";
 
@@ -63,6 +102,17 @@ export function Vault({
       // Remembering the filter is a convenience; ignore storage failures.
     }
   };
+  const [orgs, setOrgs] = useState<Organization[]>([]);
+  const [filter, setFilterState] = useState<VaultFilter>(readFilter);
+  const setFilter = (next: VaultFilter) => {
+    setFilterState(next);
+    setSelected(0);
+    try {
+      localStorage.setItem(FILTER_KEY, JSON.stringify(next));
+    } catch {
+      // Remembering the filter is a convenience; ignore storage failures.
+    }
+  };
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string>();
   const [pending, setPending] = useState<() => Promise<void>>();
@@ -87,14 +137,30 @@ export function Vault({
           all.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" })),
         );
         setSuggested(forTab);
+        setOrgs(await call("listOrganizations"));
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
       }
     })();
   }, []);
 
+  // A remembered org or collection may be gone (left the org, collection deleted).
+  const activeFilter = useMemo<VaultFilter>(() => {
+    if (filter.vault === ALL_VAULTS || filter.vault === MY_VAULT) {
+      return filter;
+    }
+    const org = orgs.find((o) => o.id === filter.vault);
+    if (!org) {
+      return { vault: ALL_VAULTS };
+    }
+    return org.collections.some((c) => c.id === filter.collectionId) ? filter : { vault: org.id };
+  }, [filter, orgs]);
+  const filterOrg = orgs.find((o) => o.id === activeFilter.vault);
+  const orgNames = useMemo(() => new Map(orgs.map((o) => [o.id, o.name])), [orgs]);
+
   const rows = useMemo<Row[]>(() => {
-    const all = items ?? [];
+    const all = (items ?? []).filter((i) => inFilter(i, activeFilter));
+    const shown = suggested.filter((i) => inFilter(i, activeFilter));
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
     if (favoritesOnly) {
       return all
@@ -107,16 +173,17 @@ export function Vault({
         .map((item) => ({ key: `a:${item.id}`, item, section: "all" }));
     }
     return [
-      ...suggested.map((item) => ({ key: `s:${item.id}`, item, section: "suggested" as const })),
+      ...shown.map((item) => ({ key: `s:${item.id}`, item, section: "suggested" as const })),
       ...all
         .filter((i) => i.favorite)
         .map((item) => ({ key: `f:${item.id}`, item, section: "favorites" as const })),
       ...all.map((item) => ({ key: `a:${item.id}`, item, section: "all" as const })),
     ];
-  }, [items, suggested, query, favoritesOnly]);
+  }, [items, suggested, query, favoritesOnly, activeFilter]);
 
   const visible = rows.slice(0, MAX_ROWS + suggested.length);
-  const allCount = query === "" ? (items?.length ?? 0) : rows.length;
+  const allCount =
+    query === "" ? (items ?? []).filter((i) => inFilter(i, activeFilter)).length : rows.length;
   const canFill = (item: VaultItem) => tabId !== undefined && item.kind === ItemKind.Login;
 
   useEffect(() => setSelected(0), [query]);
@@ -272,6 +339,49 @@ export function Vault({
         <IconButton icon="lock" label={t("lockNow")} onClick={onLock} />
       </header>
 
+      {orgs.length > 0 && (
+        <div class="filterbar">
+          <Icon name="org" size={13} />
+          <select
+            class="filter-select"
+            aria-label={t("vault")}
+            value={activeFilter.vault}
+            onChange={(e) => setFilter({ vault: e.currentTarget.value })}
+          >
+            <option value={ALL_VAULTS}>{t("allVaults")}</option>
+            <option value={MY_VAULT}>{t("myVault")}</option>
+            {orgs.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name}
+              </option>
+            ))}
+          </select>
+          {filterOrg && filterOrg.collections.length > 0 && (
+            <>
+              <span class="faint">/</span>
+              <select
+                class="filter-select"
+                aria-label={t("collection")}
+                value={activeFilter.collectionId ?? ""}
+                onChange={(e) =>
+                  setFilter({
+                    vault: filterOrg.id,
+                    collectionId: e.currentTarget.value || undefined,
+                  })
+                }
+              >
+                <option value="">{t("allCollections")}</option>
+                {filterOrg.collections.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+        </div>
+      )}
+
       <div class="scroll" ref={list} id="vault-list" role="listbox" aria-label={t("searchVault")}>
         <ErrorText error={error} />
         {items === undefined && !error && <div class="empty">{t("loading")}</div>}
@@ -341,6 +451,13 @@ export function Vault({
                     />
                   )}
                 </span>
+                {item.organizationId !== undefined &&
+                  item.organizationId !== activeFilter.vault &&
+                  orgNames.has(item.organizationId) && (
+                    <span class="badge org-badge" title={orgNames.get(item.organizationId)}>
+                      {orgNames.get(item.organizationId)}
+                    </span>
+                  )}
                 {canFill(item) && (
                   <button
                     type="button"

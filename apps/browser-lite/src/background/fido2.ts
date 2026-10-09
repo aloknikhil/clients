@@ -22,6 +22,7 @@ import { isValidRpId } from "@bitwarden/common/platform/services/fido2/domain-ut
 import { p1363ToDer } from "@bitwarden/common/platform/services/fido2/ecdsa-utils";
 import type { CipherListView, CipherView, Fido2CredentialView } from "@bitwarden/sdk-internal";
 
+import { defaultOwner } from "../lib/owner";
 import type { PasskeyChoice, WebAuthnChoice, WebAuthnPrompt } from "../lib/rpc";
 import {
   fromB64Url,
@@ -39,6 +40,7 @@ import {
 
 import { decryptCipher } from "./ciphers";
 import { saveCipher } from "./edit";
+import { listOrganizations } from "./orgs";
 import { fullSync } from "./sync";
 import { vault } from "./vault";
 
@@ -261,11 +263,12 @@ async function createWith(p: Pending, target: string | "new"): Promise<Attestati
 
   if (target === "new") {
     const now = new Date().toISOString();
+    const owner = defaultOwner(await listOrganizations());
     await saveCipher({
       id: undefined,
-      organizationId: undefined,
+      organizationId: owner.organizationId,
       folderId: undefined,
-      collectionIds: [],
+      collectionIds: owner.collectionIds,
       key: undefined,
       name: request.rp.name || p.rpId,
       notes: undefined,

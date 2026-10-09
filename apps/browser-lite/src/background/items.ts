@@ -42,6 +42,7 @@ export function toVaultItem(cipher: CipherListView): VaultItem {
     viewPassword: cipher.viewPassword,
     folderId: cipher.folderId === undefined ? undefined : String(cipher.folderId),
     organizationId: cipher.organizationId === undefined ? undefined : String(cipher.organizationId),
+    collectionIds: (cipher.collectionIds ?? []).map(String),
     uris: (login?.uris ?? []).map((u) => u.uri).filter((u): u is string => !!u),
     hasUsername: cipher.copyableFields.includes("LoginUsername"),
     hasPassword: cipher.copyableFields.includes("LoginPassword"),

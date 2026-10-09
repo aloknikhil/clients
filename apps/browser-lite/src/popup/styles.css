@@ -740,6 +740,16 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
   height: 28px;
 }
 
+/* Which organization owns the item. Neutral, so the fill button stays the accent. */
+.badge.org-badge {
+  max-width: 84px;
+  overflow: hidden;
+  background: var(--raised);
+  color: var(--text-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .fill-btn {
   position: relative;
   display: inline-flex;
@@ -1196,6 +1206,81 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
   width: 56px;
   height: 30px;
   text-align: center;
+}
+
+.option-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.owner-line {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.owner-line span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Vault / collection filter under the top bar (only shown to org members). */
+.filterbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 32px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-3);
+}
+
+.filter-select {
+  min-width: 0;
+  max-width: 50%;
+  height: 24px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-2);
+  font: 400 11.5px/16px var(--mono);
+  letter-spacing: 0.04rem;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.filter-select:hover,
+.filter-select:focus-visible {
+  background: var(--hover);
+  color: var(--text);
+  outline: none;
+}
+
+.move-item {
+  margin: 0 16px 12px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.move-note {
+  margin: 0 16px;
+  font-size: 12.5px;
+  line-height: 18px;
 }
 
 .option-link {

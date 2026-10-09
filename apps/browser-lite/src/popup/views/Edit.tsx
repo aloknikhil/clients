@@ -11,7 +11,8 @@ import type { ComponentChildren } from "preact";
 import { useEffect, useState } from "preact/hooks";
 
 import { t } from "../../lib/i18n";
-import { call, type Folder } from "../../lib/rpc";
+import { defaultOwner } from "../../lib/owner";
+import { call, type Folder, type Organization } from "../../lib/rpc";
 import {
   ErrorText,
   Icon,
@@ -22,6 +23,8 @@ import {
   useAction,
   useToast,
 } from "../components";
+
+import { OwnerPicker } from "./Owner";
 
 /** SDK `CipherType` and `FieldType`. */
 export const CipherType = Object.freeze({
@@ -232,6 +235,7 @@ export function Edit({
 }) {
   const [view, setView] = useState<CipherView>();
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [orgs, setOrgs] = useState<Organization[]>([]);
   const [tabId, setTabId] = useState<number>();
   const [revealed, setRevealed] = useState(false);
   const [newFolder, setNewFolder] = useState<string>();
@@ -244,13 +248,23 @@ export function Edit({
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         const web = tab?.url && /^https?:/.test(tab.url) ? new URL(tab.url) : undefined;
         setTabId(web ? tab.id : undefined);
-        setFolders(await call("listFolders"));
+        const [folderList, orgList] = await Promise.all([
+          call("listFolders"),
+          call("listOrganizations"),
+        ]);
+        setFolders(folderList);
+        setOrgs(orgList);
         if (id !== undefined) {
           setView(await call("getCipher", id));
         } else {
           const kind = type ?? CipherType.Login;
           const name = kind === CipherType.Login && web ? web.hostname.replace(/^www\./, "") : "";
-          setView(blankView(kind, name, kind === CipherType.Login ? web?.origin : undefined));
+          const owner = defaultOwner(orgList);
+          setView({
+            ...blankView(kind, name, kind === CipherType.Login ? web?.origin : undefined),
+            organizationId: owner.organizationId as never,
+            collectionIds: owner.collectionIds as never,
+          });
         }
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
@@ -335,7 +349,7 @@ export function Edit({
           type="button"
           class="btn primary"
           style={{ height: "28px" }}
-          disabled={save.busy}
+          disabled={save.busy || (view.organizationId !== undefined && !view.collectionIds?.length)}
           onClick={() => void save.run()}
         >
           {save.busy ? <Spinner /> : null}
@@ -704,6 +718,23 @@ export function Edit({
             </div>
           </div>
         </fieldset>
+
+        {id === undefined && orgs.length > 0 && (
+          <OwnerPicker
+            orgs={orgs}
+            value={{
+              organizationId:
+                view.organizationId === undefined ? undefined : String(view.organizationId),
+              collectionIds: (view.collectionIds ?? []).map(String),
+            }}
+            onChange={(owner) =>
+              patch({
+                organizationId: owner.organizationId as never,
+                collectionIds: owner.collectionIds as never,
+              })
+            }
+          />
+        )}
 
         <div class="group-title label">{t("options")}</div>
         <div class="group">

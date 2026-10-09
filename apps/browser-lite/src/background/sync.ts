@@ -2,7 +2,15 @@ import { apiRequest } from "../lib/api";
 import { prop } from "../lib/props";
 
 import { accountCryptographicStateFromResponse, getAccount, updateAccount } from "./account";
-import { toSdkCipher, toSdkFolder, toSdkSend, type Json } from "./mapping";
+import {
+  toSdkCipher,
+  toSdkCollection,
+  toSdkFolder,
+  toSdkPolicy,
+  toSdkSend,
+  type Json,
+} from "./mapping";
+import { toStoredOrganization, type StoredOrganization } from "./orgs";
 import { repositories, vault } from "./vault";
 
 const LAST_SYNC_KEY = "lastSync";
@@ -28,11 +36,13 @@ async function runSync(): Promise<void> {
   const profile = prop(response, "profile");
 
   const organizationKeys: Record<string, string> = {};
+  const organizations: StoredOrganization[] = [];
   for (const org of prop<unknown[]>(profile, "organizations") ?? []) {
     const key = prop<string>(org, "key");
     if (key) {
       organizationKeys[prop<string>(org, "id")!] = key;
     }
+    organizations.push(toStoredOrganization(org));
   }
   const previous = await getAccount();
   const account = await updateAccount({
@@ -46,9 +56,14 @@ async function runSync(): Promise<void> {
 
   const ciphers = (prop<unknown[]>(response, "ciphers") ?? []).map(toSdkCipher);
   const folders = (prop<unknown[]>(response, "folders") ?? []).map(toSdkFolder);
+  const collections = (prop<unknown[]>(response, "collections") ?? []).map(toSdkCollection);
+  const policies = (prop<unknown[]>(response, "policies") ?? []).map(toSdkPolicy);
   await Promise.all([
     repositories.ciphers.replaceAll(byId(ciphers)),
     repositories.folders.replaceAll(byId(folders)),
+    repositories.collections.replaceAll(byId(collections)),
+    repositories.organizations.replaceAll(byId(organizations)),
+    repositories.policies.replaceAll(byId(policies)),
   ]);
 
   if (vault.unlocked) {

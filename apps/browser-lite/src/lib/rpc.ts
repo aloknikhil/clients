@@ -56,6 +56,7 @@ export interface VaultItem {
   viewPassword: boolean;
   folderId?: string;
   organizationId?: string;
+  collectionIds: string[];
   /** Saved website addresses, for search and display. */
   uris: string[];
   hasUsername: boolean;
@@ -99,6 +100,29 @@ export type WebAuthnChoice =
 export interface Folder {
   id: string;
   name: string;
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  /** The user may put items in it (manage, edit, or the org lets them edit every item). */
+  canAddItems: boolean;
+  /** The user's own default collection ("My Items") in an org that owns members' items. */
+  isDefault: boolean;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  collections: Collection[];
+  /** The org's data-ownership policy applies to the user: new items must go into an org. */
+  ownsItems: boolean;
+}
+
+/** Where an item lives: the personal vault (no organization) or collections in one organization. */
+export interface ItemOwner {
+  organizationId?: string;
+  collectionIds: string[];
 }
 
 export const FillMode = Object.freeze({
@@ -207,6 +231,12 @@ export interface Rpc {
   deleteCipherForever(id: string): void;
   /** Saves a website to a login so it matches next time. */
   addSiteToItem(id: string, origin: string): void;
+  listOrganizations(): Organization[];
+  /**
+   * Moves an item to the personal vault or to collections in an organization. Returns the item's
+   * id afterwards: moving out of an organization copies it (new id) and trashes the original.
+   */
+  moveCipher(id: string, owner: ItemOwner): string;
   listFolders(): Folder[];
   createFolder(name: string): Folder;
   /** Copies a secret via the service worker so it never passes through the popup. */

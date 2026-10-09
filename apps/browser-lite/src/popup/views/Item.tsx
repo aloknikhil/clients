@@ -3,7 +3,7 @@ import type { ComponentChildren, VNode } from "preact";
 import { useEffect, useState } from "preact/hooks";
 
 import { t } from "../../lib/i18n";
-import { call, ItemKind } from "../../lib/rpc";
+import { call, ItemKind, type Organization } from "../../lib/rpc";
 import { toUrl } from "../../lib/url";
 import {
   ErrorText,
@@ -15,6 +15,8 @@ import {
   useAction,
   useToast,
 } from "../components";
+
+import { collectionNames, ownerName } from "./Owner";
 
 /** Server `FieldType`: 0 text, 1 hidden, 2 boolean, 3 linked. */
 const HIDDEN_FIELD = 1;
@@ -171,12 +173,15 @@ export function Item({
   id,
   onBack,
   onEdit,
+  onMove,
 }: {
   id: string;
   onBack: () => void;
   onEdit: (id: string) => void;
+  onMove: (id: string) => void;
 }) {
   const [cipher, setCipher] = useState<CipherView>();
+  const [orgs, setOrgs] = useState<Organization[]>([]);
   const [error, setError] = useState<string>();
   const [confirm, setConfirm] = useState<Pending>();
   const toast = useToast();
@@ -186,6 +191,7 @@ export function Item({
       setError(e instanceof Error ? e.message : String(e)),
     );
   useEffect(() => void load(), [id]);
+  useEffect(() => void call("listOrganizations").then(setOrgs, () => undefined), []);
 
   const act = useAction(async (action: "favorite" | "trash" | "restore" | "deleteForever") => {
     if (action === "favorite") {
@@ -237,6 +243,9 @@ export function Item({
               label={cipher.favorite ? t("unfavorite") : t("favorite")}
               onClick={() => void act.run("favorite")}
             />
+            {orgs.length > 0 && cipher.edit && (
+              <IconButton icon="move" label={t("move")} onClick={() => onMove(id)} />
+            )}
             <IconButton icon="trash" label={t("moveToTrash")} onClick={() => setConfirm("trash")} />
             {cipher.edit && (
               <button
@@ -288,6 +297,22 @@ export function Item({
                 {firstHost && (
                   <div class="faint mono" style={{ fontSize: "12px" }}>
                     {firstHost}
+                  </div>
+                )}
+                {cipher.organizationId !== undefined && (
+                  <div class="owner-line" title={t("owner")}>
+                    <Icon name="org" size={12} />
+                    <span>
+                      {[
+                        ownerName(orgs, String(cipher.organizationId)),
+                        collectionNames(orgs, {
+                          organizationId: String(cipher.organizationId),
+                          collectionIds: (cipher.collectionIds ?? []).map(String),
+                        }).join(", "),
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
                   </div>
                 )}
               </div>
