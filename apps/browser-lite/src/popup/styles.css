@@ -740,12 +740,79 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
   height: 28px;
 }
 
-/* Which organization owns the item. Neutral, so the fill button stays the accent. */
+/* Which organization owns the item. Never green, so the fill button stays the accent. */
+/* Extra badge-only tones (fg on tinted bg, ring), dark then light. */
+.org-badge.c8 {
+  --tile-fg: #3fd0e6;
+  --tile-bg: #0b2a30;
+  --tile-ring: #12505a;
+}
+.org-badge.c9 {
+  --tile-fg: #ff8a4c;
+  --tile-bg: #33170a;
+  --tile-ring: #64301a;
+}
+.org-badge.c10 {
+  --tile-fg: #ff7fc8;
+  --tile-bg: #331429;
+  --tile-ring: #66284f;
+}
+.org-badge.c11 {
+  --tile-fg: #5cb8ff;
+  --tile-bg: #0d2236;
+  --tile-ring: #1b4466;
+}
+.org-badge.c12 {
+  --tile-fg: #e8d44d;
+  --tile-bg: #2a2608;
+  --tile-ring: #57500f;
+}
+.org-badge.c13 {
+  --tile-fg: #d9b38c;
+  --tile-bg: #2b2117;
+  --tile-ring: #554230;
+}
+
+@media (prefers-color-scheme: light) {
+  .org-badge.c8 {
+    --tile-fg: #0b6f7f;
+    --tile-bg: #d3f3f8;
+    --tile-ring: #b3e8f0;
+  }
+  .org-badge.c9 {
+    --tile-fg: #9a3f12;
+    --tile-bg: #ffe1d1;
+    --tile-ring: #ffcdb3;
+  }
+  .org-badge.c10 {
+    --tile-fg: #9b2a6a;
+    --tile-bg: #ffdcef;
+    --tile-ring: #ffc6e5;
+  }
+  .org-badge.c11 {
+    --tile-fg: #155f99;
+    --tile-bg: #d6ebff;
+    --tile-ring: #bcdcff;
+  }
+  .org-badge.c12 {
+    --tile-fg: #6d6100;
+    --tile-bg: #f6f0c4;
+    --tile-ring: #eee39a;
+  }
+  .org-badge.c13 {
+    --tile-fg: #7a5530;
+    --tile-bg: #f3e6d8;
+    --tile-ring: #e8d3bd;
+  }
+}
+
 .badge.org-badge {
   max-width: 84px;
   overflow: hidden;
-  background: var(--raised);
-  color: var(--text-2);
+  /* Per-org tone from the tile palette (see orgColorClass); neutral until one is set. */
+  background: var(--tile-bg, var(--raised));
+  box-shadow: inset 0 0 0 1px var(--tile-ring, var(--border-strong));
+  color: var(--tile-fg, var(--text-2));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -869,84 +936,100 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
 }
 
 /* Oxide semantic scales: 800 content on 200 surface, 400 ring. */
-.tile.c0 {
+.tile.c0,
+.org-badge.c0 {
   --tile-fg: #00d892;
   --tile-bg: #002923;
   --tile-ring: #005441;
 }
-.tile.c1 {
+.tile.c1,
+.org-badge.c1 {
   --tile-fg: #8199fe;
   --tile-bg: #201b34;
   --tile-ring: #3e3b69;
 }
-.tile.c2 {
+.tile.c2,
+.org-badge.c2 {
   --tile-fg: #febb55;
   --tile-bg: #271f00;
   --tile-ring: #553e00;
 }
-.tile.c3 {
+.tile.c3,
+.org-badge.c3 {
   --tile-fg: #c58aff;
   --tile-bg: #2c152e;
   --tile-ring: #563160;
 }
-.tile.c4 {
+.tile.c4,
+.org-badge.c4 {
   --tile-fg: #ff6785;
   --tile-bg: #38110b;
   --tile-ring: #6e2725;
 }
-.tile.c5 {
+.tile.c5,
+.org-badge.c5 {
   --tile-fg: #00b77d;
   --tile-bg: #131519;
   --tile-ring: #003e32;
 }
-.tile.c6 {
+.tile.c6,
+.org-badge.c6 {
   --tile-fg: #adc2ff;
   --tile-bg: #131519;
   --tile-ring: #2f2a4d;
 }
-.tile.c7 {
+.tile.c7,
+.org-badge.c7 {
   --tile-fg: #dedede;
   --tile-bg: #1f2124;
   --tile-ring: #434547;
 }
 
 @media (prefers-color-scheme: light) {
-  .tile.c0 {
+  .tile.c0,
+  .org-badge.c0 {
     --tile-fg: #007455;
     --tile-bg: #c2f2db;
     --tile-ring: #a3efcb;
   }
-  .tile.c1 {
+  .tile.c1,
+  .org-badge.c1 {
     --tile-fg: #545491;
     --tile-bg: #dce4ff;
     --tile-ring: #cddaff;
   }
-  .tile.c2 {
+  .tile.c2,
+  .org-badge.c2 {
     --tile-fg: #785600;
     --tile-bg: #f7e2c6;
     --tile-ring: #f5d6ac;
   }
-  .tile.c3 {
+  .tile.c3,
+  .org-badge.c3 {
     --tile-fg: #744587;
     --tile-bg: #ecdefe;
     --tile-ring: #e6d0ff;
   }
-  .tile.c4 {
+  .tile.c4,
+  .org-badge.c4 {
     --tile-fg: #97373b;
     --tile-bg: #ffd8dd;
     --tile-ring: #ffc7ce;
   }
-  .tile.c5 {
+  .tile.c5,
+  .org-badge.c5 {
     --tile-fg: #009366;
     --tile-bg: #f7f7f7;
     --tile-ring: #a3efcb;
   }
-  .tile.c6 {
+  .tile.c6,
+  .org-badge.c6 {
     --tile-fg: #676db7;
     --tile-bg: #f7f7f7;
     --tile-ring: #cddaff;
   }
-  .tile.c7 {
+  .tile.c7,
+  .org-badge.c7 {
     --tile-fg: #303235;
     --tile-bg: #eeeeee;
     --tile-ring: #dedede;

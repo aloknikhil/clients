@@ -9,7 +9,7 @@ import {
   type Organization,
   type VaultItem,
 } from "../../lib/rpc";
-import { ErrorText, Icon, IconButton, Mark, Tile, useToast } from "../components";
+import { ErrorText, Icon, IconButton, Mark, orgColorClass, Tile, useToast } from "../components";
 
 import { SaveSite } from "./SaveSite";
 import { Reprompt } from "./Reprompt";
@@ -454,7 +454,10 @@ export function Vault({
                 {item.organizationId !== undefined &&
                   item.organizationId !== activeFilter.vault &&
                   orgNames.has(item.organizationId) && (
-                    <span class="badge org-badge" title={orgNames.get(item.organizationId)}>
+                    <span
+                      class={`badge org-badge ${orgColorClass(orgNames.get(item.organizationId)!)}`}
+                      title={orgNames.get(item.organizationId)}
+                    >
                       {orgNames.get(item.organizationId)}
                     </span>
                   )}

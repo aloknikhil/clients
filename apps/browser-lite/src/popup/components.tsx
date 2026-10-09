@@ -241,6 +241,21 @@ function colorIndex(name: string): number {
   return Math.abs(hash) % TILE_COLORS;
 }
 
+/**
+ * Badge tones for organizations: the tile palette minus its greens (the fill/accent color) and grey,
+ * plus extra tones defined for badges only, so different orgs rarely share a color.
+ */
+const ORG_COLORS = [1, 2, 3, 4, 6, 8, 9, 10, 11, 12, 13];
+
+/** Stable per-organization color class, keyed by the org's name (case-insensitive). */
+export function orgColorClass(name: string): string {
+  let hash = 0;
+  for (const ch of name.toLowerCase()) {
+    hash = (hash * 31 + ch.charCodeAt(0)) | 0;
+  }
+  return `c${ORG_COLORS[Math.abs(hash) % ORG_COLORS.length]}`;
+}
+
 function hostOf(uri: string | undefined): string | undefined {
   if (!uri) {
     return undefined;
